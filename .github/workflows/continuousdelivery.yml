@@ -1,9 +1,9 @@
 name: Continuous Delivery - Deploy to Vercel
 
 on:
-  push:
+  pull_request:
     branches:
-      - main  # Aciona o deploy apenas quando há push na branch principal
+      - main
 
 jobs:
   deploy:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  # Defina a versão do Node.js conforme sua necessidade
+          node-version: '22'
 
       - name: Install dependencies
         run: npm install  # Instala as dependências necessárias
