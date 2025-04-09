@@ -23,11 +23,3 @@ jobs:
 
       - name: Build the project
         run: npm run build  # Executa o build da aplicação Next.js
-
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}  # Token de autenticação do Vercel
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  # ID da organização no Vercel
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}  # ID do projeto no Vercel
-          vercel-args: '--prod'  # Deploy para produção
