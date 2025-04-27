@@ -38,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: npm install  # Instala as dependências necessárias
 
+      - name: Run tests # Executa os testes unitário
+        run: npm test
+
       - name: Build the project
         run: npm run build  # Executa o build da aplicação Next.js
 
