@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/cache@v4
         with:
           path: |
@@ -23,33 +23,43 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out the code
-        uses: actions/checkout@v2  # Faz checkout do código no repositório
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: '20'
+
+      - name: Use cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Install dependencies
-        run: |
-          npm install
-          npm install --save-dev babel-jest @babel/preset-env @babel/preset-react
+        run: npm install
 
-      - name: Run tests # Executa os testes unitário
+      - name: Run tests
         run: npm test
 
       - name: Build the project
-        run: npm run build  # Executa o build da aplicação Next.js
+        run: npm run build
 
       - name: Send Discord Alert on Commit
         run: |
           curl -H "Content-Type: application/json" \
-                -d '{
-                      "content": "🚀 Novo Commit no Repositório\n\n**Branch**: '${{ github.ref }}'\n**Commit**: '${{ github.sha }}'\n**Autor**: '${{ github.actor }}'\n**Link do Commit**: https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-                    }' \
-                ${{ secrets.DISCORD_WEBHOOK_URL }}
+               -d '{
+                     "content": "🚀 Novo Commit no Repositório\n\n**Branch**: '${{ github.ref }}'\n**Commit**: '${{ github.sha }}'\n**Autor**: '${{ github.actor }}'\n**Link do Commit**: https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+                   }' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
